@@ -37,12 +37,13 @@ function MoodSelector({ onSelect, theme }) {
             onMouseEnter={() => setHoveredEmoji(mood.emoji)}
             onMouseLeave={() => setHoveredEmoji(null)}
             className={`
-              p-4 rounded-xl transition-all duration-300 transform
-              ${hoveredEmoji === mood.emoji ? 'scale-125 shadow-2xl z-10' : 'scale-100 hover:scale-110'}
+              p-3.5 sm:p-4 rounded-2xl transition-all duration-200 transform
+              ${hoveredEmoji === mood.emoji ? '-translate-y-1.5 scale-[1.03] shadow-xl z-10 ring-2' : 'scale-100 shadow-sm hover:shadow-md'}
             `}
             style={{
               backgroundColor: hoveredEmoji === mood.emoji ? theme.primary : theme.secondary,
-              opacity: hoveredEmoji === mood.emoji ? 1 : 0.8
+              opacity: hoveredEmoji === mood.emoji ? 1 : 0.85,
+              borderColor: theme.primary
             }}
           >
             <div className="text-4xl mb-2">{mood.emoji}</div>
