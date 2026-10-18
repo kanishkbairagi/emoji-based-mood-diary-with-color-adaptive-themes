@@ -1,16 +1,21 @@
 import { useState } from 'react'
 import { format, parseISO, isToday, isYesterday } from 'date-fns'
+import { getEmotionVector } from '../utils/themeUtils'
 
-function JournalEntries({ entries, onUpdate, theme }) {
+function JournalEntries({ entries, onUpdate, theme, isUnlocked }) {
   const [expandedId, setExpandedId] = useState(null)
   const [editingId, setEditingId] = useState(null)
   const [editText, setEditText] = useState('')
 
   const formatDate = (dateString) => {
-    const date = parseISO(dateString)
-    if (isToday(date)) return 'Today'
-    if (isYesterday(date)) return 'Yesterday'
-    return format(date, 'MMMM d, yyyy')
+    try {
+      const date = parseISO(dateString)
+      if (isToday(date)) return 'Today'
+      if (isYesterday(date)) return 'Yesterday'
+      return format(date, 'MMMM d, yyyy')
+    } catch {
+      return dateString
+    }
   }
 
   const handleEdit = (entry) => {
@@ -37,13 +42,21 @@ function JournalEntries({ entries, onUpdate, theme }) {
         border: `2px solid ${theme.secondary}`
       }}
     >
-      <h2 className="text-2xl font-bold mb-6 text-center" style={{ color: theme.primary }}>
-        Your Journal Entries
-      </h2>
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-2">
+        <h2 className="text-2xl font-bold" style={{ color: theme.primary }}>
+          Encrypted Journal Entries
+        </h2>
+        <div className="flex items-center gap-2 text-xs">
+          <span className="px-2.5 py-1 rounded-full bg-slate-900/5 font-mono flex items-center gap-1.5">
+            <span className={`w-2 h-2 rounded-full ${isUnlocked ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+            {isUnlocked ? 'AES-256-GCM Active' : 'Vault Locked'}
+          </span>
+        </div>
+      </div>
       
       {entries.length === 0 ? (
         <div className="text-center py-12 opacity-60">
-          <p className="text-xl">No journal entries yet. Start by selecting a mood!</p>
+          <p className="text-xl">No journal entries yet. Start by selecting a mood above!</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -51,19 +64,19 @@ function JournalEntries({ entries, onUpdate, theme }) {
             const entryTheme = entry.theme || theme
             const isExpanded = expandedId === entry.id
             const isEditing = editingId === entry.id
+            const vector = getEmotionVector(entry.emoji)
 
             return (
               <div
                 key={entry.id}
                 className={`
-                  rounded-xl p-4 cursor-pointer transition-all duration-500
+                  rounded-xl p-4 cursor-pointer transition-all duration-300
                   ${isExpanded ? 'shadow-2xl' : 'shadow-md hover:shadow-lg'}
                 `}
                 style={{
                   backgroundColor: entryTheme.card,
                   border: `2px solid ${entryTheme.secondary}`,
-                  transform: isExpanded ? 'scale(1.02)' : 'scale(1)',
-                  animation: `fadeInUp 0.5s ease ${index * 0.1}s both`
+                  transform: isExpanded ? 'scale(1.01)' : 'scale(1)',
                 }}
                 onClick={() => !isEditing && setExpandedId(isExpanded ? null : entry.id)}
               >
@@ -71,35 +84,49 @@ function JournalEntries({ entries, onUpdate, theme }) {
                   <div className="flex items-center gap-3">
                     <span className="text-4xl">{entry.emoji}</span>
                     <div>
-                      <h3 
-                        className="text-xl font-bold"
-                        style={{ color: entryTheme.primary }}
-                      >
-                        {entry.label}
-                      </h3>
+                      <div className="flex items-center gap-2">
+                        <h3 
+                          className="text-xl font-bold"
+                          style={{ color: entryTheme.primary }}
+                        >
+                          {entry.label}
+                        </h3>
+                        {/* Affective continuous coordinates */}
+                        <span className="text-[10px] px-2 py-0.5 rounded bg-black/5 font-mono text-slate-600">
+                          V: {vector.valence > 0 ? `+${vector.valence}` : vector.valence} | A: {vector.arousal > 0 ? `+${vector.arousal}` : vector.arousal}
+                        </span>
+                      </div>
                       <p 
-                        className="text-sm opacity-70"
+                        className="text-xs opacity-70 mt-0.5"
                         style={{ color: entryTheme.text }}
                       >
                         {formatDate(entry.date)}
                       </p>
                     </div>
                   </div>
-                  {isExpanded && !isEditing && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleEdit(entry)
-                      }}
-                      className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 hover:scale-110"
-                      style={{
-                        backgroundColor: entryTheme.primary,
-                        color: entryTheme.bg
-                      }}
-                    >
-                      {entry.journal ? 'Edit' : 'Add Journal'}
-                    </button>
-                  )}
+
+                  <div className="flex items-center gap-2">
+                    {entry.encrypted && (
+                      <span className="hidden sm:inline-block text-[11px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-medium">
+                        🔒 Encrypted
+                      </span>
+                    )}
+                    {isExpanded && !isEditing && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleEdit(entry)
+                        }}
+                        className="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-105"
+                        style={{
+                          backgroundColor: entryTheme.primary,
+                          color: entryTheme.bg
+                        }}
+                      >
+                        {entry.journal ? 'Edit' : 'Add Journal'}
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {isExpanded && (
@@ -112,8 +139,8 @@ function JournalEntries({ entries, onUpdate, theme }) {
                         <textarea
                           value={editText}
                           onChange={(e) => setEditText(e.target.value)}
-                          placeholder="Write about your day..."
-                          className="w-full p-3 rounded-lg resize-none focus:outline-none focus:ring-2"
+                          placeholder="Write about your day (encrypted with your vault key)..."
+                          className="w-full p-3 rounded-lg resize-none focus:outline-none focus:ring-2 text-sm"
                           style={{
                             backgroundColor: entryTheme.bg,
                             color: entryTheme.text,
@@ -128,20 +155,20 @@ function JournalEntries({ entries, onUpdate, theme }) {
                               e.stopPropagation()
                               handleSave(entry.id)
                             }}
-                            className="px-4 py-2 rounded-lg font-semibold transition-all duration-300 hover:scale-110"
+                            className="px-4 py-2 rounded-lg font-semibold transition-all duration-200 text-sm hover:scale-105"
                             style={{
                               backgroundColor: entryTheme.primary,
                               color: entryTheme.bg
                             }}
                           >
-                            Save
+                            Save Encrypted
                           </button>
                           <button
                             onClick={(e) => {
                               e.stopPropagation()
                               handleCancel()
                             }}
-                            className="px-4 py-2 rounded-lg font-semibold transition-all duration-300 hover:scale-110"
+                            className="px-4 py-2 rounded-lg font-semibold transition-all duration-200 text-sm hover:scale-105"
                             style={{
                               backgroundColor: entryTheme.secondary,
                               color: entryTheme.bg
@@ -154,15 +181,22 @@ function JournalEntries({ entries, onUpdate, theme }) {
                     ) : (
                       <div>
                         {entry.journal ? (
-                          <p 
-                            className="text-base leading-relaxed whitespace-pre-wrap animate-fadeIn"
-                            style={{ color: entryTheme.text }}
-                          >
-                            {entry.journal}
-                          </p>
+                          <div className="space-y-2">
+                            <p 
+                              className="text-sm leading-relaxed whitespace-pre-wrap"
+                              style={{ color: entryTheme.text }}
+                            >
+                              {entry.journal}
+                            </p>
+                            {entry.iv && (
+                              <p className="text-[10px] font-mono opacity-50 truncate">
+                                IV: {entry.iv} | Tag: {entry.authTag || 'Verified'}
+                              </p>
+                            )}
+                          </div>
                         ) : (
                           <p 
-                            className="text-base opacity-60 italic animate-fadeIn"
+                            className="text-sm opacity-60 italic"
                             style={{ color: entryTheme.text }}
                           >
                             No journal entry yet. Click "Add Journal" to write about your day.
@@ -182,4 +216,3 @@ function JournalEntries({ entries, onUpdate, theme }) {
 }
 
 export default JournalEntries
-
