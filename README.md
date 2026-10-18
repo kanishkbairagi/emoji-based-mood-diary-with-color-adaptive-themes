@@ -1,16 +1,10 @@
 # Affective Vault: Privacy-Preserving Emotion Intelligence & Distributed Mood Telemetry
 
-[![CI Pipeline](https://github.com/your-username/emoji-mood-diary/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/emoji-mood-diary/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg)](https://www.typescriptlang.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791.svg)](https://www.postgresql.org/)
-[![Redis](https://img.shields.io/badge/Redis-7-DC382D.svg)](https://redis.io/)
-
 A zero-knowledge encrypted mental health tracking and affective computing platform. Combines **Russell's 2D Circumplex Model of Affect** with client-side **AES-256-GCM authenticated encryption**, connection-pooled **PostgreSQL** persistence, and a **Redis-backed distributed sliding-window rate limiter**.
 
 ---
 
-## 🏛️ System Architecture
+## System Architecture
 
 ```mermaid
 flowchart TD
@@ -43,7 +37,7 @@ flowchart TD
 
 ---
 
-## 🔬 Scientific & Systems Foundations
+## Scientific & Systems Foundations
 
 ### 1. Mathematical Formulation: Russell's Circumplex Model of Affect
 Traditional mood trackers treat emotions as arbitrary discrete categorical labels. This system maps emotional states continuously onto a 2D Euclidean coordinate space:
@@ -74,14 +68,14 @@ Because mental health reflections represent sensitive personal health informatio
 
 ---
 
-## 🚀 Quickstart & Deployment
+## Quickstart & Deployment
 
 ### Option 1: Docker Compose (One-Command Startup)
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/emoji-mood-diary.git
-cd emoji-mood-diary
+git clone https://github.com/kanishkbairagi/emoji-based-mood-diary-with-color-adaptive-themes.git
+cd emoji-based-mood-diary-with-color-adaptive-themes
 
 # Launch PostgreSQL, Redis, and Express API
 docker compose up --build -d
@@ -107,7 +101,7 @@ npm run dev
 
 ---
 
-## 📡 API Endpoints
+## API Endpoints
 
 | Method | Endpoint | Description | Rate Limit |
 | :--- | :--- | :--- | :--- |
@@ -120,7 +114,7 @@ npm run dev
 
 ---
 
-## 🛡️ Software Engineering Best Practices
+## Software Engineering Rigor & Security
 * **Strict Type Safety:** Fully typed TypeScript backend with Zod schema validation.
-* **Automated CI/CD:** GitHub Actions workflow verifying linting, compile integrity, and build checks on pull requests.
+* **Automated CI/CD:** GitHub Actions workflow verifying compile integrity and build checks on pull requests.
 * **Defense-in-Depth:** HTTP security headers provisioned via Helmet, bounded request payload sizes, and parameterized SQL queries to prevent injection attacks.
