@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="vaultGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="50%" stop-color="#06B6D4" />
+      <stop offset="100%" stop-color="#10B981" />
+    </linearGradient>
+    <linearGradient id="innerGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer Rounded Squircle with Subtle Drop Shadow -->
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#vaultGradient)" />
+  <rect x="4" y="4" width="56" height="28" rx="16" fill="url(#innerGlow)" />
+
+  <!-- Stylized Affective Smile Arc (Continuous Valence) -->
+  <path d="M 20 37 C 24 45, 40 45, 44 37" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" fill="none" />
+
+  <!-- Expressive Eyes / Affect Nodes -->
+  <circle cx="23" cy="26" r="3.5" fill="#FFFFFF" />
+  <circle cx="41" cy="26" r="3.5" fill="#FFFFFF" />
+
+  <!-- Cryptographic Sparkle / Zero-Knowledge Node (Top Right) -->
+  <path d="M 46 12 L 48 16 L 52 18 L 48 20 L 46 24 L 44 20 L 40 18 L 44 16 Z" fill="#FDE047" />
+</svg>
